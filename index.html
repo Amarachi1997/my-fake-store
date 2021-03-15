@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/main.css">
+  <!--font awesome-->
+  <link href="/css/css/fontawesome.css" rel="stylesheet">
+  <link href="/css/css/brands.css" rel="stylesheet">
+  <link href="/css/css/solid.css" rel="stylesheet">
+    <title>Fake Store</title>
+</head>
+<body>
+         
+ <div id="app">
+    <!--navigation bar-->
+  <section id="navbar" class="fixed-top">
+    <a class="navbar-brand " href="#"><img src="images/main.png" class="rounded mx-auto d-block" height="50" width="50"></a>
+   
+    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      
+        <div class="container-fluid">
+          
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link active" @click.prevent="isShowingCart=false" aria-current="page" href="#">{{navLink.navitem[0]}}</a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link" href="#">{{navLink.navitem[2]}}</a>
+              </li>
+              <li class="nav-item">
+                <a class="btn cartBtn" @click="isShowingCart=true"  href="#">{{navLink.navitem[1]}}</a>
+              </li>
+                
+
+            </ul>
+           
+            
+          </div>
+          <span class="navbar-text text-right span-nav">
+            <img src="images/bag.png" alt=",,,,"><span class="cartNo">{{cart.items.length}}</span><span class="cartTotal">{{ cartTotal | currency}}</span>
+          </span>
+          
+        </div>
+      </nav>
+    </section>
+
+
+    <!--home  page-->
+  <section id="homepage" v-if="!isShowingCart">
+   
+          <section id="header">
+        <div id="mid-header">
+            <h1 >The Everything Fake Store</h1>
+            <h5>Don't buy anything because this is my best scam</h5>
+            <span>You were warned</span><br>
+            <a class="btn btn-primary" href="#shop">So Go Ahead</a>
+        </div>
+          </section>
+
+
+        <section id="shop">
+            <div class="container">
+                <div class="row">
+                    <div v-for="product in products" class="card col-lg-4 col-md-6 col-sm-12 col-xs-12 main-card">
+                        <div class="col">
+                            <div class="card shadow-sm">
+                    
+                              <img v-bind:src="product.image" class="card-img-top rounded float-start" width="100%" height="225">
+                              <div class="card-body">
+                                <p class="card-text">{{product.title}}</p><br>
+                                <p>{{product.price | currency}}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                  <div class="btn-group">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" :disabled="product.id === 1" @click='addProductToCart(product)'>Add to Cart</button>
+                                  </div>
+                                  <small class="text-muted" v-if="product.id > 1">{{product.id}} in stock</small>
+                                  <small class="text-danger" v-else>Out of Stock</small>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          </div>
+                        
+                </div>
+               <!--see more button-->
+                <div class="containerBtn">
+                  <div class="center">
+                    <button type="button" class="btn btn-secondary seemore" @click='showAllProducts'>see more</button>
+                  </div>
+                </div>
+            </div>
+        </section>
+  
+  </section>
+
+  <!--cart page-->
+  <section id="cartpage" v-else>
+        <!--cart page header-->
+        <section id="header">
+          <div id="mid-header">
+            <h1 >This Is Your cart</h1>
+            <h5>Remember I warned you not to buy anything but you chose this. Well, I'll be happy to still take your money</h5>
+          </div>
+          </section>
+
+          <!--cart page table-->
+         
+            <table v-if="cart.items.length > 0" class="table table-striped">
+              <thead>
+                <tr>
+                
+                  <th scope="col">Item</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="item in cart.items">
+                  <td>{{item.product.title}}</td>
+                  <td> {{item.quantity}} &nbsp; 
+                    <button class="btn btn-success suc" @click="increaseQuantity(item)" :disabled="item.product.id === 0">+</button>
+                    <button class="btn btn-failure" @click="decreaseQuantity(item)">-</button> &nbsp;
+                  </td>
+                  <td>{{item.quantity * item.product.price | currency}}</td>
+                </tr>
+                <tr> 
+                  <td class="text-right" colspan="2">
+                    <strong>Subtotal</strong>
+                  </td>
+                  <td>{{cartTotal | currency}}</td>
+                </tr>
+                <tr> 
+                  <td class="text-right" colspan="2">
+                    <strong>Delivery Fee</strong>
+                  </td>
+                  <td>{{deliveryFee | currency}}</td>
+                </tr>
+                <tr> 
+                  <td class="text-right" colspan="2">
+                    <strong>Total</strong>
+                  </td>
+                  <td>{{cartTotal + deliveryFee | currency}}</td>
+                </tr>
+                <tr> 
+                  <td class="text-right" colspan="2"></td>
+                  <td><button class="btn btn-success suc" @click="checkout">checkout</button></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h2 v-else class="text-center cartNote">Hey There, I just checked and it turns out Your cart is EMPTY!</h2>
+              
+  </section>
+    
+    <!--footer section-->
+    <section id="footer">
+      <a class="navbar-brand " href="#"><img src="images/main.png" class="rounded mx-auto d-block" height="60" width="60"></a>
+     
+      <h2>Inspired by the love of Money</h2>
+        <h5>follow me for more scams</h5>
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-4 col-md-4 colsm-12 col-xs-12"></div>
+            <div class="col-lg-4 col-md-4 colsm-12 col-xs-12 d-flex justify-content-center">
+              <a href="https://web.facebook.com/amara.chiaha" ><i class="fab fa-facebook-f footer-icon"></i></a>
+              <a href="https://www.instagram.com/chiahaamara/"><i class="fab fa-instagram footer-icon"></i></a>
+              <a href="https://twitter.com/amarachi_chiaha"><i class="fab fa-twitter footer-icon"></i></a>
+            </div>
+            <div class="col-lg-4 col-md-4 colsm-12 col-xs-12"></div>
+          </div>
+        </div>
+        
+    </section>
+ </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js" integrity="sha384-KsvD1yqQ1/1+IA7gi3P0tyJcT3vR+NdBTt13hSJ2lnve8agRGXTTyNaBYmCR/Nwi" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js" integrity="sha384-nsg8ua9HAw1y0W1btsyWgBklPnCUAFLuTMS2G72MMONqmOymq585AcH49TLBQObG" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+        <script src="app.js"></script>
+          
+</body>
+</html>
